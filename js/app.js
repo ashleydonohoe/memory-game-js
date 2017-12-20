@@ -32,7 +32,21 @@
 (function () {
     'use strict';
 
-    const cards = [""];
+    // Deck of 16 cards using Font Awesome class names for symbols
+    const cards = [
+        'fa-diamond', 'fa-diamond', 'fa-paper-plane-o', 'fa-paper-plane-o', 'fa-anchor', 'fa-anchor',
+        'fa-bolt', 'fa-bolt', 'fa-cube', 'fa-cube', 'fa-leaf', 'fa-leaf', 'fa-bicycle', 'fa-bicycle', 'fa-bomb',
+        'fa-bomb'
+    ];
+
+    let openCards = [];
+    let lockedCards = [];
+
+    let numberOfMoves;
+
+    // initialize as 3 by default
+    let numberOfStars = 3;
+
 
     // Shuffle function from http://stackoverflow.com/a/2450976
     function shuffle(array) {
@@ -48,5 +62,22 @@
 
         return array;
     }
+
+    // Create the cards that will appear on the page
+    function createCards(shuffledDeck) {
+        let listCode = "";
+        shuffledDeck.forEach(function(card) {
+             listCode += '<li class="card"> <i class="fa ' + card + '"></i></li>';
+         });
+
+        return listCode;
+    }
+
+    const shuffleDeck = shuffle(cards);
+    const actualCards = createCards(shuffleDeck);
+
+   console.log(actualCards);
+
+   document.getElementById('deck').innerHTML = actualCards;
 
 }());
