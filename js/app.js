@@ -143,6 +143,11 @@
         // initialize as 3 by default
         numberOfStars = 3;
 
+        // clear timer if it exists
+        if(timer) {
+            clearInterval(timer);
+        }
+
         // Hide modal if open and show container if not visible
         document.getElementById('modal').style.display = 'none';
         document.getElementsByClassName('container')[0].style.display = 'flex';
