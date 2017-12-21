@@ -64,17 +64,23 @@
             numberOfStars = 2;
             document.getElementsByClassName('stars')[0].innerHTML = '<li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li>';
         } else {
-            numberOfMoves = 1;
+            numberOfStars = 1;
             document.getElementsByClassName('stars')[0].innerHTML = '<li><i class="fa fa-star"></i></li>';
         }
 
     }
 
     function endGame() {
-        alert(time);
+        // Clear timer and fill out modal content
         clearInterval(timer);
         document.getElementById('numberOfMoves').textContent = numberOfMoves;
         document.getElementById('numberOfStars').textContent = numberOfStars;
+        document.getElementById('numberOfSeconds').textContent = time;
+        document.getElementById('play-again').addEventListener('click', startGame);
+
+        // Show modal and hide main content
+        document.getElementsByClassName('container')[0].style.display = 'none';
+        document.getElementById('modal').style.display = "block";
     }
 
     function setUpInteraction() {
@@ -86,7 +92,7 @@
             gameCards[i].addEventListener('click', function(event) {
 
                // If less than two cards open, add the card to the array
-               if(openCards.length < 2) {
+               if(openCards.length < 2 && !gameCards[i].classList.contains('open')) {
                    gameCards[i].classList.add('show');
                    gameCards[i].classList.add('open');
                    openCards.push({content: gameCards[i].textContent, id: event.target.id});
