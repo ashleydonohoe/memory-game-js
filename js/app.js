@@ -1,14 +1,3 @@
-// /*
-//  * set up the event listener for a card. If a card is clicked:
-//  *  - display the card's symbol (put this functionality in another function that you call from this one)
-//  *  - add the card to a *list* of "open" cards (put this functionality in another function that you call from this one)
-//  *  - if the list already has another card, check to see if the two cards match
-//  *    + if the cards do match, lock the cards in the open position (put this functionality in another function that you call from this one)
-//  *    + if the cards do not match, remove the cards from the list and hide the card's symbol (put this functionality in another function that you call from this one)
-//  *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
-//  *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
-//  */
-
 (function () {
     'use strict';
 
@@ -84,18 +73,20 @@
     }
 
     function checkForMatch() {
+        // If there are two open cards, check for match
         if(openCards.length == 2) {
             // Increase number of moves and update UI
             numberOfMoves++;
             document.getElementById('moves').textContent = numberOfMoves;
             updateStarRating();
 
-            // Check match
+            // Check if both cards have same symbol
             if(openCards[0].content == openCards[1].content) {
                 console.log("it's a match!");
                 // Increase number of locked cards by 2
                 numberOfLockedCards += 2;
 
+                // If all cards are open, then it's time to end the game
                 if(numberOfLockedCards == cards.length) {
                     // show modal with time, rating and play again option for winner
                     endGame();
@@ -112,7 +103,6 @@
                     document.getElementById(card2).classList.remove('open');
                     document.getElementById(card2).classList.remove('show');
                 }, 500);
-
             }
 
             // Reset open cards
@@ -153,6 +143,10 @@
         // initialize as 3 by default
         numberOfStars = 3;
 
+        // Hide modal if open and show container if not visible
+        document.getElementById('modal').style.display = 'none';
+        document.getElementsByClassName('container')[0].style.display = 'flex';
+
         // Shuffle deck and add new cards to page
         const shuffleDeck = shuffle(cards);
         const actualCards = createCards(shuffleDeck);
@@ -165,7 +159,7 @@
         // Used as reference for clearing and setting timer: https://www.w3schools.com/js/js_timing.asp
         timer = setInterval(function() {
             time += 1;
-            console.log(time);
+            document.getElementById('timer').textContent = time + ' seconds';
         }, 1000);
     }
 

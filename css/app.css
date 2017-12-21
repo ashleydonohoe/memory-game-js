@@ -113,3 +113,8 @@ h1 {
     text-align: center;
     padding: 10px;
 }
+
+#timer {
+    float: right;
+    margin-left: 20px;
+}
