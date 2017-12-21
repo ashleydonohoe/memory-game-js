@@ -83,6 +83,43 @@
         document.getElementById('modal').style.display = "block";
     }
 
+    function checkForMatch() {
+        if(openCards.length == 2) {
+            // Increase number of moves and update UI
+            numberOfMoves++;
+            document.getElementById('moves').textContent = numberOfMoves;
+            updateStarRating();
+
+            // Check match
+            if(openCards[0].content == openCards[1].content) {
+                console.log("it's a match!");
+                // Increase number of locked cards by 2
+                numberOfLockedCards += 2;
+
+                if(numberOfLockedCards == cards.length) {
+                    // show modal with time, rating and play again option for winner
+                    endGame();
+                }
+            } else {
+                // Remove classes and close cards since they're not matches
+                const card1 = openCards[0].id;
+                const card2 = openCards[1].id;
+
+                // Delays the cards from flipping too fast back to closed state
+                setTimeout(function() {
+                    document.getElementById(card1).classList.remove('open');
+                    document.getElementById(card1).classList.remove('show');
+                    document.getElementById(card2).classList.remove('open');
+                    document.getElementById(card2).classList.remove('show');
+                }, 500);
+
+            }
+
+            // Reset open cards
+            openCards = [];
+        }
+    }
+
     function setUpInteraction() {
         const gameCards = document.getElementsByClassName('card');
 
@@ -91,51 +128,14 @@
         for(let i = 0; i < gameCards.length; i++) {
             gameCards[i].addEventListener('click', function(event) {
 
-               // If less than two cards open, add the card to the array
+               // If less than two cards open and the card clicked isn't already open, add the card to the array for open cards
                if(openCards.length < 2 && !gameCards[i].classList.contains('open')) {
                    gameCards[i].classList.add('show');
                    gameCards[i].classList.add('open');
                    openCards.push({content: gameCards[i].textContent, id: event.target.id});
 
-
                    // If two cards are open, check for match
-                   if(openCards.length == 2) {
-                       console.log('Time to check!');
-                       console.log(openCards);
-                       // Increase number of moves
-                       numberOfMoves++;
-                       document.getElementById('moves').textContent = numberOfMoves;
-                       updateStarRating();
-                       // Check match
-                       if(openCards[0].content == openCards[1].content) {
-                           console.log("it's a match!");
-                           // Increase number of locked cards by 2
-                           numberOfLockedCards += 2;
-
-                           if(numberOfLockedCards == cards.length) {
-                               console.log("User won!");
-                               // show modal with time, rating and play again option
-                               endGame();
-                           }
-                       } else {
-                           console.log('not a match');
-                           // Remove classes and close cards
-                           const card1 = openCards[0].id;
-                           const card2 = openCards[1].id;
-
-                           // Delays the cards from flipping too fast back to closed state
-                           setTimeout(function() {
-                               document.getElementById(card1).classList.remove('open');
-                               document.getElementById(card1).classList.remove('show');
-                               document.getElementById(card2).classList.remove('open');
-                               document.getElementById(card2).classList.remove('show');
-                           }, 1000);
-
-                       }
-
-                       // Reset open cards
-                       openCards = [];
-                   }
+                   checkForMatch();
                }
             });
         }
@@ -143,6 +143,7 @@
     }
 
     function startGame() {
+        // Reset variables
         openCards = [];
         time = 0;
         numberOfLockedCards = 0;
@@ -152,15 +153,15 @@
         // initialize as 3 by default
         numberOfStars = 3;
 
+        // Shuffle deck and add new cards to page
         const shuffleDeck = shuffle(cards);
         const actualCards = createCards(shuffleDeck);
-
-
         document.getElementById('deck').innerHTML = actualCards;
 
+        // Setup the event listeners
         setUpInteraction();
 
-
+        // Start the timer
         // Used as reference for clearing and setting timer: https://www.w3schools.com/js/js_timing.asp
         timer = setInterval(function() {
             time += 1;
@@ -168,7 +169,6 @@
         }, 1000);
     }
 
+    // Start the game on page load
     startGame();
-
-
 }());
