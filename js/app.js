@@ -1,23 +1,3 @@
-/*
- * Create a list that holds all of your cards
- */
-//
-// (function () {
-//     'use strict';
-// }
-//
-//
-// /*
-//  * Display the cards on the page
-//  *   - shuffle the list of cards using the provided "shuffle" method below
-//  *   - loop through each card and create its HTML
-//  *   - add each card's HTML to the page
-//  */
-//
-//
-// }());
-//
-//
 // /*
 //  * set up the event listener for a card. If a card is clicked:
 //  *  - display the card's symbol (put this functionality in another function that you call from this one)
@@ -40,12 +20,15 @@
     ];
 
     let openCards = [];
-    let numberOfLockedCards = 0;
+    let numberOfLockedCards;
 
-    let numberOfMoves = 0;
+    let numberOfMoves;
 
     // initialize as 3 by default
-    let numberOfStars = 3;
+    let numberOfStars;
+
+    let timer;
+    let time = 0;
 
 
     // Shuffle function from http://stackoverflow.com/a/2450976
@@ -73,8 +56,31 @@
         return listCode;
     }
 
+    function updateStarRating() {
+        if(numberOfMoves < 12) {
+            numberOfStars = 3;
+            document.getElementsByClassName('stars')[0].innerHTML = '<li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li>';
+        } else if (numberOfMoves >= 12 && numberOfMoves < 18) {
+            numberOfStars = 2;
+            document.getElementsByClassName('stars')[0].innerHTML = '<li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li>';
+        } else {
+            numberOfMoves = 1;
+            document.getElementsByClassName('stars')[0].innerHTML = '<li><i class="fa fa-star"></i></li>';
+        }
+
+    }
+
+    function endGame() {
+        alert(time);
+        clearInterval(timer);
+        document.getElementById('numberOfMoves').textContent = numberOfMoves;
+        document.getElementById('numberOfStars').textContent = numberOfStars;
+    }
+
     function setUpInteraction() {
         const gameCards = document.getElementsByClassName('card');
+
+        document.getElementsByClassName('restart')[0].addEventListener('click', startGame);
 
         for(let i = 0; i < gameCards.length; i++) {
             gameCards[i].addEventListener('click', function(event) {
@@ -93,25 +99,36 @@
                        // Increase number of moves
                        numberOfMoves++;
                        document.getElementById('moves').textContent = numberOfMoves;
+                       updateStarRating();
                        // Check match
-                       if(openCards[0] == openCards[1]) {
+                       if(openCards[0].content == openCards[1].content) {
                            console.log("it's a match!");
                            // Increase number of locked cards by 2
                            numberOfLockedCards += 2;
+
+                           if(numberOfLockedCards == cards.length) {
+                               console.log("User won!");
+                               // show modal with time, rating and play again option
+                               endGame();
+                           }
                        } else {
                            console.log('not a match');
                            // Remove classes and close cards
                            const card1 = openCards[0].id;
                            const card2 = openCards[1].id;
-                           document.getElementById(card1).classList.remove('open');
-                           document.getElementById(card1).classList.remove('show');
-                           document.getElementById(card2).classList.remove('open');
-                           document.getElementById(card2).classList.remove('show');
 
-                           // Reset empty cards
-                           openCards = [];
+                           // Delays the cards from flipping too fast back to closed state
+                           setTimeout(function() {
+                               document.getElementById(card1).classList.remove('open');
+                               document.getElementById(card1).classList.remove('show');
+                               document.getElementById(card2).classList.remove('open');
+                               document.getElementById(card2).classList.remove('show');
+                           }, 1000);
 
                        }
+
+                       // Reset open cards
+                       openCards = [];
                    }
                }
             });
@@ -119,12 +136,33 @@
 
     }
 
-    const shuffleDeck = shuffle(cards);
-    const actualCards = createCards(shuffleDeck);
+    function startGame() {
+        openCards = [];
+        time = 0;
+        numberOfLockedCards = 0;
+
+        numberOfMoves = 0;
+
+        // initialize as 3 by default
+        numberOfStars = 3;
+
+        const shuffleDeck = shuffle(cards);
+        const actualCards = createCards(shuffleDeck);
 
 
-   document.getElementById('deck').innerHTML = actualCards;
+        document.getElementById('deck').innerHTML = actualCards;
 
-   setUpInteraction();
+        setUpInteraction();
+
+
+        // Used as reference for clearing and setting timer: https://www.w3schools.com/js/js_timing.asp
+        timer = setInterval(function() {
+            time += 1;
+            console.log(time);
+        }, 1000);
+    }
+
+    startGame();
+
 
 }());
