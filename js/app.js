@@ -40,9 +40,9 @@
     ];
 
     let openCards = [];
-    let lockedCards = [];
+    let numberOfLockedCards = 0;
 
-    let numberOfMoves;
+    let numberOfMoves = 0;
 
     // initialize as 3 by default
     let numberOfStars = 3;
@@ -66,18 +66,65 @@
     // Create the cards that will appear on the page
     function createCards(shuffledDeck) {
         let listCode = "";
-        shuffledDeck.forEach(function(card) {
-             listCode += '<li class="card"> <i class="fa ' + card + '"></i></li>';
+        shuffledDeck.forEach(function(card, index) {
+             listCode += '<li id="' + index + '" class="card">' + card + '<i class="fa ' + card + '"></i></li>';
          });
 
         return listCode;
     }
 
+    function setUpInteraction() {
+        const gameCards = document.getElementsByClassName('card');
+
+        for(let i = 0; i < gameCards.length; i++) {
+            gameCards[i].addEventListener('click', function(event) {
+
+               // If less than two cards open, add the card to the array
+               if(openCards.length < 2) {
+                   gameCards[i].classList.add('show');
+                   gameCards[i].classList.add('open');
+                   openCards.push({content: gameCards[i].textContent, id: event.target.id});
+
+
+                   // If two cards are open, check for match
+                   if(openCards.length == 2) {
+                       console.log('Time to check!');
+                       console.log(openCards);
+                       // Increase number of moves
+                       numberOfMoves++;
+                       document.getElementById('moves').textContent = numberOfMoves;
+                       // Check match
+                       if(openCards[0] == openCards[1]) {
+                           console.log("it's a match!");
+                           // Increase number of locked cards by 2
+                           numberOfLockedCards += 2;
+                       } else {
+                           console.log('not a match');
+                           // Remove classes and close cards
+                           const card1 = openCards[0].id;
+                           const card2 = openCards[1].id;
+                           document.getElementById(card1).classList.remove('open');
+                           document.getElementById(card1).classList.remove('show');
+                           document.getElementById(card2).classList.remove('open');
+                           document.getElementById(card2).classList.remove('show');
+
+                           // Reset empty cards
+                           openCards = [];
+
+                       }
+                   }
+               }
+            });
+        }
+
+    }
+
     const shuffleDeck = shuffle(cards);
     const actualCards = createCards(shuffleDeck);
 
-   console.log(actualCards);
 
    document.getElementById('deck').innerHTML = actualCards;
+
+   setUpInteraction();
 
 }());
